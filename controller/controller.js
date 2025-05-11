@@ -28,8 +28,13 @@ export const login = (req, res) => {
   res.redirect(authUrl);
 };
 
+
+
+
+
 export const callback = async (req, res) => {
   const code = req.query.code;
+  console.log('Authorization code received:', code);
 
   try {
     const response = await axios.post('https://accounts.spotify.com/api/token',
@@ -46,12 +51,19 @@ export const callback = async (req, res) => {
     accessToken = response.data.access_token;
     refreshToken = response.data.refresh_token;
 
-    res.send(' Authorization successful. You can now access /spotify routes.');
+    console.log('Access Token:', accessToken);
+
+    res.send('✅ Authorization successful. You can now access /spotify routes.');
   } catch (err) {
-    console.error(err.response?.data || err);
-    res.status(500).send(' Authorization failed.');
+    console.error('Spotify callback error:', err.response?.data || err);
+    res.status(500).send('❌ Authorization failed.');
   }
 };
+
+
+
+
+
 
 export const getTopTracks = async (req, res) => {
   try {
