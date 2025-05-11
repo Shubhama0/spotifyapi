@@ -36,29 +36,40 @@ export const callback = async (req, res) => {
   const code = req.query.code;
   console.log('Authorization code received:', code);
 
+  if (!code) {
+    return res.status(400).send('No authorization code found in query.');
+  }
+
   try {
-    const response = await axios.post('https://accounts.spotify.com/api/token',
+    const response = await axios.post(
+      'https://accounts.spotify.com/api/token',
       qs.stringify({
         grant_type: 'authorization_code',
-        code,
+        code: code,
         redirect_uri: process.env.REDIRECT_URI,
-        client_id: process.env.CLIENT_ID,
-        client_secret: process.env.CLIENT_SECRET,
-      }), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      });
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization:
+            'Basic ' +
+            Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`).toString('base64'),
+        },
+      }
+    );
 
     accessToken = response.data.access_token;
     refreshToken = response.data.refresh_token;
 
-    console.log('Access Token:', accessToken);
-
+    console.log('✅ Access Token:', accessToken);
     res.send('✅ Authorization successful. You can now access /spotify routes.');
   } catch (err) {
-    console.error('Spotify callback error:', err.response?.data || err);
+    console.error('❌ Spotify callback error:', err.response?.data || err.message);
     res.status(500).send('❌ Authorization failed.');
   }
 };
+
+export { accessToken, refreshToken };
 
 
 
