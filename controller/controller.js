@@ -4,9 +4,15 @@ import qs from 'querystring';
 let accessToken = '';
 let refreshToken = '';
 
+
+
 const authHeader = () => ({
   headers: { Authorization: `Bearer ${accessToken}` }
 });
+
+
+
+
 
 export const login = (req, res) => {
   const scopes = [
@@ -61,11 +67,11 @@ export const callback = async (req, res) => {
     accessToken = response.data.access_token;
     refreshToken = response.data.refresh_token;
 
-    console.log('✅ Access Token:', accessToken);
-    res.send('✅ Authorization successful. You can now access /spotify routes.');
+    console.log(' Access Token:', accessToken);
+    res.send(' Authorization successful. You can now access /spotify routes.');
   } catch (err) {
-    console.error('❌ Spotify callback error:', err.response?.data || err.message);
-    res.status(500).send('❌ Authorization failed.');
+    console.error('Spotify callback error:', err.response?.data || err.message);
+    res.status(500).send(' Authorization failed.');
   }
 };
 
@@ -94,6 +100,9 @@ export const getNowPlaying = async (req, res) => {
   }
 };
 
+
+
+
 export const getFollowedArtists = async (req, res) => {
   try {
     const result = await axios.get('https://api.spotify.com/v1/me/following?type=artist', authHeader());
@@ -102,6 +111,9 @@ export const getFollowedArtists = async (req, res) => {
     res.status(500).send('Error fetching artists');
   }
 };
+
+
+
 
 export const playTrack = async (req, res) => {
   const trackId = req.params.trackId;
@@ -116,6 +128,12 @@ export const playTrack = async (req, res) => {
   }
 };
 
+
+
+
+
+
+
 export const pausePlayback = async (req, res) => {
   try {
     await axios.put('https://api.spotify.com/v1/me/player/pause', {}, authHeader());
@@ -124,6 +142,12 @@ export const pausePlayback = async (req, res) => {
     res.status(500).send('Error pausing playback');
   }
 };
+
+
+
+
+
+
 
 export const baseRoute = (req, res) => {
   res.json({
